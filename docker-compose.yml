@@ -1,0 +1,37 @@
+version: '3.9'
+
+
+services:
+  web:
+    build: .
+    expose:
+      - 8000
+    depends_on:
+      - db
+    command: gunicorn journal.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/app/journal/static/
+    env_file:
+      - ./.env.dev
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=students
+      - POSTGRES_USER=bogdan
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - postgres_data:/var/lib/postgres/data/
+  nginx:
+    build: ./nginx
+    ports:
+      - "1337:80"
+    volumes:
+      - static_volume:/app/journal/static/
+    depends_on:
+      - web
+  
+volumes:
+  postgres_data:
+  static_volume:
+
+
