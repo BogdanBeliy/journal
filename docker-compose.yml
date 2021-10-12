@@ -4,15 +4,16 @@ version: '3.9'
 services:
   web:
     build: .
-    expose:
-      - 8000
+    container_name: journal
     depends_on:
       - db
-    command: gunicorn journal.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn journal.wsgi:application --bind 0.0.0.0:8000 -w 4 --reload
+    expose:
+      - 8000
     volumes:
       - static_volume:/app/journal/static/
     env_file:
-      - ./.env.dev
+      - ./dev.env
   db:
     image: postgres
     environment:
