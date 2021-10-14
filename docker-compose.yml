@@ -5,34 +5,51 @@ services:
   web:
     build: .
     container_name: journal
-    depends_on:
-      - db
-    command: gunicorn journal.wsgi:application --bind 0.0.0.0:8000 -w 4 --reload
-    expose:
-      - 8000
-    volumes:
-      - ./static/:/journal/static
+    restart: on-failure
+    ports:
+      - "8000:8000"
     env_file:
       - ./dev.env
+    command: bash -c "python manage.py migrate --noinput && python manage.py collectstatic --noinput --clear && gunicorn journal.wsgi:application --bind 0.0.0.0:8000 -w 4 --reload"
+    networks:
+      main_net:
+    depends_on:
+      - db
+
   db:
     image: postgres
+    container_name: postgres_web
     environment:
-      - POSTGRES_DB=students
-      - POSTGRES_USER=bogdan
+      - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=bogdan
+      - POSTGRES_DB=students
     volumes:
       - postgres_data:/var/lib/postgres/data
+    networks:
+      main_net:
+
+
   nginx:
+    restart: always
     image: nginx:latest
+    container_name: proxy_nginx
     ports:
       - "80:80"
     volumes:
       - ./static/:/journal/static
+      - ./media/:/journal/media
       - ./nginx/:/etc/nginx/conf.d
     depends_on:
       - web
-  
+    networks:
+      main_net:
+
+
 volumes:
   postgres_data:
+
+networks:
+  main_net:
 
 

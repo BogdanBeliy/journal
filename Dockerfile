@@ -1,13 +1,13 @@
-FROM python:3.9
+FROM python:3.8
 
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /journal
-RUN mkdir /journal/static/
-COPY req.txt .
-RUN pip install --upgrade pip
+RUN apt-get update && apt update
+
+COPY req.txt /journal
 RUN pip install -r req.txt
 COPY . .
 
