@@ -21,14 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 #config for dev server
 # SECRET_KEY = 'django-insecure-1w*_ryx&b3s5a1s&bwlpfsx99owa@1f#y#5!pqjud#by$j*b4e'
-# DEBUG = True
+DEBUG = True
 # ALLOWED_HOSTS = []
 
 
 
 #deploy config with ENV
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = int(os.environ.get('DEBUG', default=0))
+#DEBUG = int(os.environ.get('DEBUG', default=0))
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(" ")
 
 

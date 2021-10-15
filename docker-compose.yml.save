@@ -1,4 +1,3 @@
-
 version: '3.3'
 
 
@@ -6,13 +5,14 @@ services:
   web:
     build: .
     container_name: journal
+    restart: on-failure
     ports:
       - "8000:8000"
+    volumes:
+      67.205.155.17
     env_file:
       - ./dev.env
-    command: bash -c "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:8000 journal.wsgi --workers 3"
-    volumes:
-      - ./static/:/journal/static
+    command: bash -c "python manage.py migrate --noinput && gunicorn journal.wsgi:application --bind 0.0.0.0:8000 -w 4 --reload"
     networks:
       main_net:
     depends_on:
