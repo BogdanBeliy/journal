@@ -1,10 +1,10 @@
-
-version: '3.3'
+version: '3.5'
 
 
 services:
   web:
     build: .
+    tty: true
     container_name: journal
     ports:
       - "8000:8000"
@@ -12,7 +12,7 @@ services:
       - ./dev.env
     command: bash -c "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:8000 journal.wsgi --workers 3"
     volumes:
-      - ./static/:/journal/static
+      - .:/journal
     networks:
       main_net:
     depends_on:
@@ -33,15 +33,20 @@ services:
 
 
   nginx:
-    restart: always
     image: nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+      network: host
     container_name: proxy_nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./static/:/journal/static
       - ./media/:/journal/media
       - ./nginx/:/etc/nginx/conf.d
+      - letsencrypt:/etc/letsencrypt     
     depends_on:
       - web
     networks:
@@ -50,8 +55,13 @@ services:
 
 volumes:
   postgres_data:
+  letsencrypt:
 
 networks:
   main_net:
+
+
+
+
 
 

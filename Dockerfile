@@ -8,8 +8,8 @@ WORKDIR /journal
 RUN apt-get update && apt update
 
 COPY req.txt /journal
-RUN pip install -r req.txt
-COPY . .
+RUN pip install --default-timeout=100 -r req.txt
+
 
 
 
